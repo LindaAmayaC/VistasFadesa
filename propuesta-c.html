@@ -564,7 +564,7 @@ wire('data-d',drawDiam); wire('data-c',drawCar); wire('data-o',drawOpp);
     return null;
   }
   var links=document.querySelectorAll('.nav a');
-  var byEl=new Map();
+  var byEl=new Map(); var lock=0;
   links.forEach(function(a){
     var t=a.textContent.trim();
     if(!(t in navMap))return;
@@ -576,12 +576,14 @@ wire('data-d',drawDiam); wire('data-c',drawCar); wire('data-o',drawOpp);
       e.preventDefault();
       links.forEach(function(x){x.classList.remove('on');});
       a.classList.add('on');
+      lock=Date.now()+900;
       if(key==='TOP')window.scrollTo({top:0,behavior:'smooth'});
       else el.scrollIntoView({behavior:'smooth',block:'start'});
     });
   });
   if('IntersectionObserver' in window){
     var io=new IntersectionObserver(function(ents){
+      if(Date.now()<lock)return;
       ents.forEach(function(en){
         if(!en.isIntersecting)return;
         var lk=byEl.get(en.target); if(!lk)return;
