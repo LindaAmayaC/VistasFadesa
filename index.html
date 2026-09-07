@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vista 360 Cliente — FADESA · propuestas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F4FB; --card:#FFFFFF; --ink:#181A3A; --ink-2:#5B5F86; --ink-3:#8E92B0;
+  --line:#ECEDF6; --brand:#4B3FE4; --brand-2:#7A6BFF; --brand-soft:#EEECFE;
+  --sh:0 1px 2px rgba(24,26,58,.04), 0 6px 18px rgba(24,26,58,.05); --r:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:40px 22px 60px}
+
+.hero{border-radius:var(--r);padding:34px 34px;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,#4B3FE4 0%,#6A55F0 52%,#8B6BFF 100%);
+  box-shadow:0 10px 26px rgba(75,63,228,.22);margin-bottom:28px}
+.hero::after{content:'';position:absolute;right:-70px;top:-90px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.09)}
+.hero::before{content:'';position:absolute;right:60px;bottom:-120px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero .tag{position:relative;z-index:1;display:inline-block;font-size:11px;font-weight:600;background:rgba(255,255,255,.18);border-radius:999px;padding:5px 12px}
+.hero h1{position:relative;z-index:1;font-size:28px;font-weight:800;letter-spacing:-.025em;margin:14px 0 6px}
+.hero p{position:relative;z-index:1;margin:0;font-size:14px;color:rgba(255,255,255,.82);max-width:620px}
+
+.lbl{font-size:12px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:22px 22px 20px;
+  text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:6px;
+  border:1.5px solid transparent;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
+.card:hover{transform:translateY(-3px);border-color:var(--brand-soft);box-shadow:0 10px 26px rgba(75,63,228,.14)}
+.card .num{font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-soft);width:fit-content;padding:3px 10px;border-radius:999px}
+.card h2{font-size:17px;font-weight:700;letter-spacing:-.01em;margin:10px 0 0}
+.card p{font-size:13px;color:var(--ink-2);margin:2px 0 0;line-height:1.55}
+.card .go{margin-top:12px;font-size:13px;font-weight:600;color:var(--brand);display:flex;align-items:center;gap:6px}
+.card .go svg{transition:transform .15s ease}
+.card:hover .go svg{transform:translateX(3px)}
+
+.note{margin-top:26px;background:#F7F7FD;border-radius:14px;padding:16px 18px;font-size:13px;color:var(--ink-2);line-height:1.6}
+.note b{color:var(--ink)}
+.foot{margin-top:28px;font-size:12px;color:var(--ink-3);text-align:center}
+
+@media (max-width:680px){.grid{grid-template-columns:1fr}.hero h1{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <span class="tag">Bitrix24 · Mockups navegables</span>
+    <h1>Vista 360 del Cliente — FADESA</h1>
+    <p>Cuatro propuestas de interfaz para la ficha 360 dentro de Bitrix24. Datos de muestra. Abre cada una para recorrerla.</p>
+  </div>
+
+  <p class="lbl">Estilos de vista de cliente</p>
+  <div class="grid">
+    <a class="card" href="propuesta-b.html">
+      <span class="num">Propuesta B</span>
+      <h2>Estilo industrial</h2>
+      <p>Panel fijo de “la llamada” a la izquierda y tres pestañas — Comercial, Cartera, Planta. Paleta acero, IBM Plex, código SAP y frescura del dato en el header.</p>
+      <span class="go">Abrir <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="propuesta-c.html">
+      <span class="num">Propuesta C</span>
+      <h2>Dashboard SaaS</h2>
+      <p>Hero índigo con la identidad del cliente, métricas pastel con ondas, sidebar con íconos, donuts de cumplimiento y barras por mes. La misma jerarquía, tono producto.</p>
+      <span class="go">Abrir <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+  </div>
+
+  <p class="lbl" style="margin-top:28px">Pantalla de entrada — encontrar al cliente</p>
+  <div class="grid">
+    <a class="card" href="buscador.html">
+      <span class="num">Buscador · completo</span>
+      <h2>Índice con columnas analíticas</h2>
+      <p>Búsqueda en vivo por nombre y código SAP, filtros rápidos y selector de cliente dentro del detalle para saltar entre cuentas sin volver atrás.</p>
+      <span class="go">Abrir <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="buscador-simple.html">
+      <span class="num">Buscador · simple</span>
+      <h2>Encabezado limpio</h2>
+      <p>Versión reducida: sin tarjetas ni banner en degradado, conservando la tabla y las columnas analíticas. El índigo queda reservado para el detalle.</p>
+      <span class="go">Abrir <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+  </div>
+
+  <div class="note">
+    <b>Nota:</b> los datos mostrados son de ejemplo, únicamente para ilustrar la interfaz.
+  </div>
+
+  <p class="foot">Mockups de interfaz · vista previa para revisión</p>
+</div>
+</body>
+</html>

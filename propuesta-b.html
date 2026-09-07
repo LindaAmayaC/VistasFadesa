@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vista 360 Cliente — FADESA / Bitrix24 · propuesta B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A1D21;
+  --ink-2:#4A525B;
+  --ink-3:#79838D;
+  --steel-0:#FFFFFF;
+  --steel-1:#F5F7F9;
+  --steel-2:#EBEEF2;
+  --line:#D7DDE4;
+  --line-strong:#B9C2CC;
+  --accent:#14509B;
+  --accent-soft:#E8F0F9;
+  --alert:#B4231F;
+  --alert-soft:#FCEEED;
+  --watch:#9A6206;
+  --watch-soft:#FCF3E2;
+  --ok:#1B6E47;
+  --ok-soft:#EAF4EE;
+  --r:6px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; padding:24px 16px 64px;
+  background:var(--steel-1); color:var(--ink);
+  font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:14px; line-height:1.5;
+  font-variant-numeric:tabular-nums;
+}
+.shell{max-width:1180px;margin:0 auto}
+.note{font-size:12px;color:var(--ink-3);margin:0 0 14px}
+.app{background:var(--steel-0);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+
+/* ---------- identidad ---------- */
+.ident{padding:22px 26px 18px;border-bottom:1px solid var(--line)}
+.ident-top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.name{font-size:30px;line-height:1.1;font-weight:600;letter-spacing:-0.02em;margin:0}
+.sap{
+  display:inline-block;margin-top:8px;padding:2px 8px;
+  font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;
+  background:var(--steel-2);border:1px solid var(--line);border-radius:4px;color:var(--ink-2);
+}
+.desc{margin:8px 0 0;font-size:13px;color:var(--ink-2)}
+.risk{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--ok)}
+.risk .lamp{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:none}
+.risk small{display:block;font-weight:400;color:var(--ink-3);font-size:11px}
+
+.ident-bottom{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+.owner{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);background:var(--steel-1);border:1px solid var(--line);border-radius:999px;padding:4px 11px 4px 4px}
+.av{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:9px;font-weight:600;display:flex;align-items:center;justify-content:center;flex:none}
+.av.sec{background:var(--ink-3)}
+.owner b{font-weight:500;color:var(--ink)}
+.spacer{flex:1}
+.fresh{font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+.fresh .lamp{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.flag{font-size:12px;color:var(--watch);background:var(--watch-soft);border:1px solid #EBD4A4;border-radius:4px;padding:3px 9px}
+
+/* ---------- estructura ---------- */
+.body{display:grid;grid-template-columns:352px 1fr}
+.brief{border-right:1px solid var(--line);background:var(--steel-1);padding:20px 22px 26px;align-self:start;position:sticky;top:24px}
+.panel{padding:20px 26px 30px;min-width:0}
+
+h2.h{font-size:13px;font-weight:600;margin:0 0 12px;letter-spacing:0}
+h3.sub{font-size:13px;font-weight:600;margin:26px 0 10px}
+h3.sub:first-child{margin-top:0}
+.src{font-size:11px;color:var(--ink-3);font-weight:400}
+
+/* ---------- alertas: registro con filete ---------- */
+.log{margin:0 0 20px;border-top:1px solid var(--line)}
+.log-item{border-bottom:1px solid var(--line);border-left:3px solid var(--alert);padding:11px 0 11px 12px;background:var(--steel-0)}
+.log-item.watch{border-left-color:var(--watch)}
+.log-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.log-title{font-size:13px;font-weight:600;margin:0}
+.log-val{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--alert);white-space:nowrap}
+.log-item.watch .log-val{color:var(--watch)}
+.log-do{margin:4px 0 0;font-size:12px;color:var(--ink-2)}
+
+/* ---------- nota de visita ---------- */
+.quote{border-left:3px solid var(--line-strong);padding:2px 0 2px 12px;margin:0 0 8px;font-size:13px;line-height:1.6;color:var(--ink)}
+.quote-by{font-size:11px;color:var(--ink-3);margin:0 0 20px}
+
+.facts{margin:0 0 20px;font-size:12.5px}
+.facts div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dotted var(--line)}
+.facts dt{color:var(--ink-2)}
+.facts dd{margin:0;text-align:right;font-weight:500}
+
+/* ---------- contactos ---------- */
+.who{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.who:last-of-type{border-bottom:none}
+.who .av{width:28px;height:28px;font-size:10px;background:var(--steel-2);color:var(--ink-2)}
+.who.key .av{background:var(--accent);color:#fff}
+.who-n{font-size:13px;margin:0;font-weight:500}
+.who-m{font-size:11.5px;color:var(--ink-3);margin:1px 0 0}
+.role{font-size:10.5px;padding:1px 7px;border-radius:3px;height:fit-content;white-space:nowrap;background:var(--steel-2);color:var(--ink-2)}
+.role.key{background:var(--accent-soft);color:var(--accent)}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:0 0 22px}
+.tab{
+  appearance:none;border:none;background:none;font:inherit;font-size:13.5px;font-weight:500;
+  color:var(--ink-2);padding:9px 14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:3px}
+[hidden]{display:none !important}
+
+/* ---------- cifras ---------- */
+.figs{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:24px}
+.fig{background:var(--steel-0);padding:12px 14px}
+.fig dt{font-size:11.5px;color:var(--ink-2);margin:0 0 3px}
+.fig dd{margin:0;font-size:20px;font-weight:600;letter-spacing:-0.01em}
+.fig dd.sm{font-size:14px;font-weight:500;padding-top:5px}
+.fig dd.bad{color:var(--alert)}
+.fig dd.good{color:var(--ok)}
+
+/* ---------- tabla ---------- */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:500;font-size:11.5px;color:var(--ink-3);padding:0 10px 6px 0;border-bottom:1px solid var(--line)}
+th.n,td.n{text-align:right;padding-right:0}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line)}
+td.code{font-family:'IBM Plex Mono',monospace;font-size:12.5px}
+tr:last-child td{border-bottom:none}
+.mini{font-size:11.5px;color:var(--ink-3);display:block}
+.pill{font-size:11px;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.watch{background:var(--watch-soft);color:var(--watch)}
+.pill.bad{background:var(--alert-soft);color:var(--alert)}
+.pill.info{background:var(--accent-soft);color:var(--accent)}
+
+/* ---------- barras ---------- */
+.meter{height:5px;background:var(--steel-2);border-radius:3px;overflow:hidden;margin-top:5px;width:100%}
+.meter i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.meter i.bad{background:var(--alert)}
+.meter i.watch{background:var(--watch)}
+
+.seg{display:flex;height:26px;border-radius:4px;overflow:hidden;margin-bottom:8px}
+.seg i{display:flex;align-items:center;padding-left:9px;font-size:11.5px;color:#fff;font-weight:500}
+.seg i.rest{background:var(--steel-2);color:var(--ink-2)}
+
+.chartwrap{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px 10px;margin-bottom:8px}
+.legend{display:flex;gap:16px;font-size:11.5px;color:var(--ink-2);margin-top:6px}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+
+.switch{display:inline-flex;border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.switch button{appearance:none;border:none;background:var(--steel-0);font:inherit;font-size:12px;padding:5px 12px;color:var(--ink-2);cursor:pointer}
+.switch button+button{border-left:1px solid var(--line)}
+.switch button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.switch button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.rowhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:26px 0 10px}
+.rowhead h3{margin:0}
+
+.timeline{border-left:1px solid var(--line);padding-left:16px;margin-left:4px}
+.tl{position:relative;padding-bottom:14px}
+.tl::before{content:'';position:absolute;left:-20px;top:6px;width:7px;height:7px;border-radius:50%;background:var(--line-strong)}
+.tl.win::before{background:var(--ok)}
+.tl.loss::before{background:var(--alert)}
+.tl-y{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-3)}
+.tl-t{margin:1px 0 0;font-size:13px}
+
+.link{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;padding:2px 0}
+.link:hover{border-bottom-color:var(--accent)}
+.link:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+@media (max-width:900px){
+  body{padding:12px 10px 40px}
+  .body{grid-template-columns:1fr}
+  .brief{position:static;border-right:none;border-bottom:1px solid var(--line)}
+  .panel{padding:18px 16px 26px}
+  .ident{padding:18px 16px 14px}
+  .name{font-size:24px}
+  .figs{grid-template-columns:repeat(2,1fr)}
+  .tabs{overflow-x:auto}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<p class="note">Propuesta B — misma información, distinta jerarquía y estilo. Vista 360 del cliente · Bitrix24 / FADESA</p>
+
+<div class="app">
+
+  <!-- IDENTIDAD -->
+  <header class="ident">
+    <div class="ident-top">
+      <div>
+        <h1 class="name">Fruvesa Food SAS</h1>
+        <span class="sap">SAP 100482</span>
+        <p class="desc">Envases metálicos y plásticos — La Estrella, Colombia. Cliente desde 2019.</p>
+      </div>
+      <div class="risk">
+        <span class="lamp"></span>
+        <span>Riesgo bajo<small>Crédito 60 días aprobado</small></span>
+      </div>
+    </div>
+    <div class="ident-bottom">
+      <span class="owner"><span class="av">MC</span> <b>Miyu Chang</b> — Metales</span>
+      <span class="owner"><span class="av sec">CV</span> <b>Carlos Villacis</b> — Plásticos</span>
+      <span class="flag">Reasignada hace 2 días</span>
+      <span class="spacer"></span>
+      <span class="fresh"><span class="lamp"></span> Ventas y cartera al 4 sep, 8:03 a.m.</span>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- COLUMNA IZQUIERDA: LA LLAMADA -->
+    <aside class="brief">
+      <h2 class="h">Atiende esto primero</h2>
+      <div class="log">
+        <div class="log-item">
+          <div class="log-head">
+            <p class="log-title">Cartera vencida 61–120 días</p>
+            <span class="log-val">$131.9K</span>
+          </div>
+          <p class="log-do">Confirma con financiera antes de ofrecer crédito nuevo.</p>
+        </div>
+        <div class="log-item watch">
+          <div class="log-head">
+            <p class="log-title">Oferta tapas corona export</p>
+            <span class="log-val">4 días</span>
+          </div>
+          <p class="log-do">Quedó pendiente desde la reunión de octubre.</p>
+        </div>
+      </div>
+
+      <h2 class="h">Última visita <span class="src">— nota en CRM</span></h2>
+      <p class="quote">Cliente sensible al precio, siempre pide 60 días de crédito. La reunión de octubre quedó pendiente: quieren ver oferta de tapas corona para exportación antes de fin de mes.</p>
+      <p class="quote-by">Lucas Rueda, KAM anterior</p>
+
+      <h2 class="h">Cómo tratar la cuenta</h2>
+      <dl class="facts">
+        <div><dt>Decide de verdad</dt><dd>Jefe financiero</dd></div>
+        <div><dt>Canal preferido</dt><dd>Email, trato formal</dd></div>
+        <div><dt>Cerró la última</dt><dd>Lucas Rueda</dd></div>
+        <div><dt>Tareas abiertas</dt><dd>2</dd></div>
+      </dl>
+
+      <h2 class="h">Quién es quién</h2>
+      <div class="who key">
+        <span class="av">JF</span>
+        <div style="flex:1">
+          <p class="who-n">Jefe financiero</p>
+          <p class="who-m">jefe.financiero@fruvesa.com</p>
+          <p class="who-m">Email · define condiciones de pago</p>
+        </div>
+        <span class="role key">Decide</span>
+      </div>
+      <div class="who">
+        <span class="av">GA</span>
+        <div style="flex:1">
+          <p class="who-n">Gerencia y administración</p>
+          <p class="who-m">gerencia@fruvesa.com</p>
+          <p class="who-m">Llamada · influencia media</p>
+        </div>
+        <span class="role">Influye</span>
+      </div>
+      <div class="who">
+        <span class="av">CC</span>
+        <div style="flex:1">
+          <p class="who-n">Control de calidad</p>
+          <p class="who-m">calidad@fruvesa.com</p>
+          <p class="who-m">WhatsApp · consultas técnicas</p>
+        </div>
+        <span class="role">Técnico</span>
+      </div>
+    </aside>
+
+    <!-- COLUMNA DERECHA: LOS NÚMEROS -->
+    <main class="panel">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-p="p-com">Comercial</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="p-car">Cartera</button>
+        <button class="tab" role="tab" aria-selected="false" data-p="p-pla">Planta y relación</button>
+      </div>
+
+      <!-- COMERCIAL -->
+      <div id="p-com" role="tabpanel">
+        <dl class="figs">
+          <div class="fig"><dt>Venta vs presupuesto</dt><dd>83%</dd></div>
+          <div class="fig"><dt>Venta vs forecast</dt><dd>93%</dd></div>
+          <div class="fig"><dt>Share of wallet</dt><dd>85%</dd></div>
+          <div class="fig"><dt>Oportunidades abiertas</dt><dd>$1.07M</dd></div>
+        </dl>
+
+        <div class="rowhead">
+          <h3 class="sub">Venta mensual 2026 <span class="src">— DWH, presupuesto de archivo</span></h3>
+        </div>
+        <div class="chartwrap">
+          <svg id="chart" viewBox="0 0 640 170" width="100%" height="170" role="img" aria-label="Venta real contra presupuesto y año anterior, por mes de 2026"></svg>
+          <div class="legend">
+            <span><i class="sw" style="background:var(--accent)"></i> Real</span>
+            <span><i class="sw" style="background:var(--line-strong)"></i> Presupuesto</span>
+            <span><i class="sw" style="background:var(--steel-2);border:1px solid var(--line)"></i> Año anterior</span>
+          </div>
+        </div>
+
+        <div class="rowhead">
+          <h3 class="sub">Cumplimiento por diámetro</h3>
+          <span class="switch">
+            <button aria-pressed="true" data-d="cuerpos">Cuerpos</button>
+            <button aria-pressed="false" data-d="tapas">Tapas</button>
+          </span>
+        </div>
+        <table>
+          <thead><tr><th>Referencia</th><th class="n">Venta / ppto USD</th><th class="n">Unidades</th><th class="n" style="width:120px">Cumplimiento</th></tr></thead>
+          <tbody id="diam"></tbody>
+        </table>
+
+        <div class="rowhead">
+          <h3 class="sub">Oportunidades abiertas</h3>
+          <span class="switch" id="opp-sw">
+            <button aria-pressed="true" data-o="todas">Todas</button>
+            <button aria-pressed="false" data-o="Metales">Metales</button>
+            <button aria-pressed="false" data-o="Plásticos">Plásticos</button>
+          </span>
+        </div>
+        <table>
+          <thead><tr><th>Oportunidad</th><th>Etapa</th><th class="n">Monto</th></tr></thead>
+          <tbody id="opp"></tbody>
+        </table>
+
+        <div class="rowhead"><h3 class="sub">Share of wallet <span class="src">— archivo Excel en Bitrix</span></h3></div>
+        <div class="seg">
+          <i style="width:85%;background:var(--accent)">Fadesa 85%</i>
+          <i class="rest" style="width:15%">Otros 15%</i>
+        </div>
+        <table>
+          <tbody>
+            <tr><td class="code">C202/200X308R</td><td class="n">100% share</td><td class="n">52.2M unid</td></tr>
+            <tr><td class="code">C211X106L EO</td><td class="n">85% share</td><td class="n">142.6M unid</td></tr>
+            <tr><td class="code">C300/214X40TR</td><td class="n"><span class="pill watch">44% share</span></td><td class="n">5.8M unid</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CARTERA -->
+      <div id="p-car" role="tabpanel" hidden>
+        <div class="rowhead" style="margin-top:0">
+          <h3 class="sub">Cartera por antigüedad <span class="src">— DWH</span></h3>
+          <span class="switch" id="car-sw">
+            <button aria-pressed="true" data-c="todas">Todas</button>
+            <button aria-pressed="false" data-c="metales">Metales</button>
+            <button aria-pressed="false" data-c="plasticos">Plásticos</button>
+          </span>
+        </div>
+        <dl class="figs" style="grid-template-columns:repeat(3,1fr)">
+          <div class="fig"><dt>Total cartera</dt><dd id="c-tot">$4.51M</dd></div>
+          <div class="fig"><dt>Morosidad</dt><dd id="c-mor" class="bad">18.9%</dd></div>
+          <div class="fig"><dt>Forma de pago</dt><dd class="sm">Crédito 60 días</dd></div>
+        </dl>
+        <table>
+          <thead><tr><th>Antigüedad</th><th class="n">Saldo</th><th class="n" style="width:180px">Peso</th></tr></thead>
+          <tbody id="car"></tbody>
+        </table>
+        <p style="margin-top:20px"><a class="link" href="#">Abrir análisis completo en BI Builder</a></p>
+      </div>
+
+      <!-- PLANTA -->
+      <div id="p-pla" role="tabpanel" hidden>
+        <h3 class="sub">Cerradoras instaladas</h3>
+        <table>
+          <thead><tr><th>Referencia</th><th>Modelo y marca</th><th>Últ. overhaul</th><th class="n">Estado</th></tr></thead>
+          <tbody>
+            <tr><td class="code">C202/200X308R<span class="mini">Instalada 2019</span></td><td>CS-8500 Ferrum</td><td>Mar 2025</td><td class="n"><span class="pill ok">Operativa</span></td></tr>
+            <tr><td class="code">C211X106L EO<span class="mini">Instalada 2021</span></td><td>CS-6200 Ferrum</td><td>Ene 2024</td><td class="n"><span class="pill ok">Operativa</span></td></tr>
+            <tr><td class="code">C300/214X40TR<span class="mini">Instalada 2016</span></td><td>CS-4100 Angelus</td><td>Ago 2022</td><td class="n"><span class="pill watch">Requiere mant.</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="sub">Casos post-venta</h3>
+        <table>
+          <tbody>
+            <tr><td>Escurrimiento de sello hermetizante<span class="mini">Causa raíz: lote de compuesto defectuoso, corregido con el proveedor</span></td><td class="n"><span class="pill ok">Cerrado</span></td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="sub">Historial de la relación</h3>
+        <div class="timeline">
+          <div class="tl"><span class="tl-y">2025</span><p class="tl-t">Visita técnica a planta — revisión de la instalación de la cerradora C202</p></div>
+          <div class="tl loss"><span class="tl-y">2025</span><p class="tl-t">Se perdió la oportunidad de envases 2L por falta de disponibilidad de producto</p></div>
+          <div class="tl"><span class="tl-y">2024</span><p class="tl-t">Reclamo por escurrimiento de sello, resuelto cambiando el proveedor de compuesto</p></div>
+          <div class="tl win"><span class="tl-y">2024</span><p class="tl-t">Se ganó la licitación anual de tapas corona; el factor decisivo fue el tiempo de entrega</p></div>
+          <div class="tl"><span class="tl-y">2019</span><p class="tl-t">Alta como cliente en el segmento de vegetales y otros alimentos</p></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</div>
+
+<script>
+/* tabs */
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(b){
+      b.setAttribute('aria-selected','false');
+      document.getElementById(b.dataset.p).hidden = true;
+    });
+    t.setAttribute('aria-selected','true');
+    document.getElementById(t.dataset.p).hidden = false;
+  });
+});
+
+/* chart */
+(function(){
+  var m=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  var prev=[220,230,225,238,235,228,222,236,230,244,238,224];
+  var bud =[245,255,250,265,270,260,255,270,265,280,275,260];
+  var real=[230,240,235,250,245,238,null,null,null,null,null,null];
+  var W=640,H=170,pl=34,pr=6,pt=10,pb=22,max=300;
+  var iw=W-pl-pr, ih=H-pt-pb, step=iw/12;
+  var y=function(v){return pt+ih-(v/max)*ih;};
+  var s='';
+  [0,100,200,300].forEach(function(g){
+    s+='<line x1="'+pl+'" x2="'+W+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="#EBEEF2"/>';
+    s+='<text x="0" y="'+(y(g)+4)+'" font-size="10" fill="#79838D">'+g+'K</text>';
+  });
+  m.forEach(function(lbl,i){
+    var cx=pl+step*i, bw=step*0.28;
+    s+='<rect x="'+(cx+step*0.12)+'" y="'+y(prev[i])+'" width="'+bw+'" height="'+(ih+pt-y(prev[i]))+'" fill="#EBEEF2"/>';
+    if(real[i]!==null){
+      s+='<rect x="'+(cx+step*0.44)+'" y="'+y(real[i])+'" width="'+bw+'" height="'+(ih+pt-y(real[i]))+'" fill="#14509B"/>';
+    }
+    s+='<line x1="'+(cx+step*0.08)+'" x2="'+(cx+step*0.78)+'" y1="'+y(bud[i])+'" y2="'+y(bud[i])+'" stroke="#B9C2CC" stroke-width="2"/>';
+    s+='<text x="'+(cx+step*0.42)+'" y="'+(H-6)+'" font-size="10" fill="#79838D" text-anchor="middle">'+lbl+'</text>';
+  });
+  document.getElementById('chart').innerHTML=s;
+})();
+
+/* diámetros */
+var diam={
+  cuerpos:[{d:'Ø307',pu:420,vu:390,p:93,pn:1200,vn:1100},{d:'Ø401',pu:310,vu:295,p:95,pn:900,vn:860},{d:'Ø603',pu:180,vu:150,p:83,pn:500,vn:410}],
+  tapas:[{d:'26mm',pu:260,vu:242,p:93,pn:3400,vn:3150},{d:'38mm',pu:190,vu:175,p:92,pn:2100,vn:1930},{d:'53mm',pu:140,vu:98,p:70,pn:1500,vn:1050}]
+};
+function drawDiam(k){
+  document.getElementById('diam').innerHTML=diam[k].map(function(r){
+    var c=r.p>=90?'':(r.p>=80?'watch':'bad');
+    return '<tr><td class="code">'+r.d+'</td>'+
+      '<td class="n">$'+r.vu+'K <span style="color:var(--ink-3)">/ $'+r.pu+'K</span></td>'+
+      '<td class="n">'+r.vn+'K <span style="color:var(--ink-3)">/ '+r.pn+'K</span></td>'+
+      '<td class="n">'+r.p+'%<span class="meter"><i class="'+c+'" style="width:'+r.p+'%"></i></span></td></tr>';
+  }).join('');
+}
+drawDiam('cuerpos');
+document.querySelectorAll('[data-d]').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('[data-d]').forEach(function(x){x.setAttribute('aria-pressed','false');});
+    b.setAttribute('aria-pressed','true'); drawDiam(b.dataset.d);
+  });
+});
+
+/* oportunidades */
+var opps=[{n:'Envase 1 gal — Seres',e:'Cotización final',c:'info',a:2026,dv:'Plásticos',v:420},
+          {n:'Tapas corona — exportación',e:'Negociación',c:'watch',a:2025,dv:'Metales',v:650}];
+function drawOpp(f){
+  var list=f==='todas'?opps:opps.filter(function(o){return o.dv===f;});
+  document.getElementById('opp').innerHTML=list.map(function(o){
+    return '<tr><td>'+o.n+'<span class="mini">'+o.dv+', abierta en '+o.a+'</span></td>'+
+      '<td><span class="pill '+o.c+'">'+o.e+'</span></td><td class="n">$'+o.v+'K</td></tr>';
+  }).join('')||'<tr><td colspan="3" style="color:var(--ink-3);padding:14px 0">Sin oportunidades abiertas en esta división.</td></tr>';
+}
+drawOpp('todas');
+document.querySelectorAll('[data-o]').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('[data-o]').forEach(function(x){x.setAttribute('aria-pressed','false');});
+    b.setAttribute('aria-pressed','true'); drawOpp(b.dataset.o);
+  });
+});
+
+/* cartera */
+var car={
+  todas:{t:'$4.51M',m:'18.9%',r:[{l:'Corriente',v:'$3.73M',p:83,c:''},{l:'1–30 días',v:'$630K',p:14,c:'watch'},{l:'61–120 días',v:'$149.9K',p:3,c:'bad'}]},
+  metales:{t:'$3.28M',m:'24.8%',r:[{l:'Corriente',v:'$2.73M',p:83,c:''},{l:'1–30 días',v:'$420K',p:13,c:'watch'},{l:'61–120 días',v:'$131.9K',p:4,c:'bad'}]},
+  plasticos:{t:'$1.23M',m:'8.2%',r:[{l:'Corriente',v:'$1.00M',p:81,c:''},{l:'1–30 días',v:'$210K',p:17,c:'watch'},{l:'61–120 días',v:'$18K',p:2,c:'bad'}]}
+};
+function drawCar(k){
+  var d=car[k];
+  document.getElementById('c-tot').textContent=d.t;
+  document.getElementById('c-mor').textContent=d.m;
+  document.getElementById('car').innerHTML=d.r.map(function(r){
+    return '<tr><td>'+r.l+'</td><td class="n">'+r.v+'</td><td class="n">'+r.p+'%<span class="meter"><i class="'+r.c+'" style="width:'+r.p+'%"></i></span></td></tr>';
+  }).join('');
+}
+drawCar('todas');
+document.querySelectorAll('[data-c]').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('[data-c]').forEach(function(x){x.setAttribute('aria-pressed','false');});
+    b.setAttribute('aria-pressed','true'); drawCar(b.dataset.c);
+  });
+});
+</script>
+</body>
+</html>

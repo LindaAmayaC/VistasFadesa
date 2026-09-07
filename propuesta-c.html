@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vista 360 Cliente — FADESA · propuesta C</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F4FB;
+  --card:#FFFFFF;
+  --ink:#181A3A;
+  --ink-2:#5B5F86;
+  --ink-3:#8E92B0;
+  --line:#ECEDF6;
+  --brand:#4B3FE4;
+  --brand-2:#7A6BFF;
+  --brand-soft:#EEECFE;
+  --peach:#FFEDE4;  --peach-ink:#C2410C;
+  --mint:#E3F6EF;   --mint-ink:#0E7C63;
+  --butter:#FFF4D9; --butter-ink:#A16207;
+  --danger:#E14B4B; --danger-soft:#FDECEC;
+  --warn:#D98407;   --warn-soft:#FDF3E3;
+  --ok:#18A05F;     --ok-soft:#E6F6EE;
+  --sh:0 1px 2px rgba(24,26,58,.04), 0 6px 18px rgba(24,26,58,.05);
+  --r:18px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:14px;line-height:1.5;font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+.app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+
+/* ---------- sidebar ---------- */
+.side{padding:24px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:26px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px}
+.brand-mark{width:34px;height:34px;border-radius:11px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;letter-spacing:-.02em}
+.brand b{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.brand span{display:block;font-size:11px;color:var(--ink-3);font-weight:500;margin-top:-2px}
+.nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.nav-lbl{font-size:11px;color:var(--ink-3);font-weight:600;padding:12px 12px 5px}
+.nav a{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;
+  color:var(--ink-2);text-decoration:none;font-size:13.5px;font-weight:500;
+}
+.nav a:hover{background:#EAEBF6;color:var(--ink)}
+.nav a.on{background:var(--card);color:var(--brand);font-weight:600;box-shadow:var(--sh)}
+.nav a .ic{width:18px;height:18px;flex:none;opacity:.85}
+.nav a .dot{margin-left:auto;width:7px;height:7px;border-radius:50%;background:var(--danger)}
+
+/* ---------- topbar ---------- */
+.main{padding:22px 26px 40px;min-width:0}
+.top{display:flex;align-items:center;gap:16px;margin-bottom:22px}
+.top h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0}
+.crumb{font-size:12px;color:var(--ink-3);font-weight:500;margin:0 0 2px}
+.search{
+  margin-left:auto;display:flex;align-items:center;gap:9px;background:var(--card);
+  border-radius:999px;padding:9px 16px;box-shadow:var(--sh);width:250px;color:var(--ink-3);font-size:13px}
+.search input{border:none;outline:none;font:inherit;flex:1;min-width:0;background:none;color:var(--ink)}
+.iconbtn{width:40px;height:40px;border-radius:50%;background:var(--card);box-shadow:var(--sh);display:grid;place-items:center;position:relative;flex:none;cursor:pointer;border:none}
+.iconbtn .dot{position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--danger);border:2px solid #fff}
+.me{display:flex;align-items:center;gap:9px;background:var(--card);border-radius:999px;padding:5px 14px 5px 5px;box-shadow:var(--sh)}
+.me .av{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700}
+.me b{font-size:12.5px;font-weight:600;display:block}
+.me small{font-size:10.5px;color:var(--ink-3)}
+
+/* ---------- grid ---------- */
+.cols{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:18px;align-items:start}
+.stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px 22px}
+.card.tight{padding:18px}
+.chead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.chead h2{font-size:16px;font-weight:700;letter-spacing:-.01em;margin:0}
+.chead .aside{margin-left:auto;font-size:11.5px;color:var(--ink-3);font-weight:500}
+
+/* ---------- hero ---------- */
+.hero{
+  border-radius:var(--r);padding:24px 26px;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,#4B3FE4 0%,#6A55F0 52%,#8B6BFF 100%);
+  box-shadow:0 10px 26px rgba(75,63,228,.22);
+}
+.hero::after{content:'';position:absolute;right:-70px;top:-90px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.09)}
+.hero::before{content:'';position:absolute;right:40px;bottom:-120px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero-top{display:flex;align-items:flex-start;gap:14px;position:relative;z-index:1;flex-wrap:wrap}
+.hero .tag{font-size:11px;font-weight:600;background:rgba(255,255,255,.18);border-radius:999px;padding:4px 11px}
+.hero .tag.live{background:#fff;color:var(--brand)}
+.hero h2{font-size:26px;font-weight:800;letter-spacing:-.025em;margin:12px 0 4px;position:relative;z-index:1}
+.hero p.sub{margin:0;font-size:13px;color:rgba(255,255,255,.78);position:relative;z-index:1}
+.hero-foot{display:flex;align-items:center;gap:10px;margin-top:20px;position:relative;z-index:1;flex-wrap:wrap}
+.kams{display:flex;align-items:center}
+.kams .av{width:30px;height:30px;border-radius:50%;background:#fff;color:var(--brand);display:grid;place-items:center;font-size:10.5px;font-weight:700;border:2px solid rgba(255,255,255,.6)}
+.kams .av+.av{margin-left:-9px;background:#DCD6FF}
+.kam-txt{font-size:12px;color:rgba(255,255,255,.82)}
+.kam-txt b{display:block;color:#fff;font-size:12.5px;font-weight:600}
+.hero .cta{
+  margin-left:auto;background:#fff;color:var(--brand);border:none;font:inherit;font-weight:700;font-size:13px;
+  padding:11px 20px;border-radius:999px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.hero .cta:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+/* ---------- métricas pastel ---------- */
+.pastels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pastel{border-radius:var(--r);padding:16px 16px 0;position:relative;overflow:hidden;min-height:132px}
+.pastel.a{background:var(--peach)} .pastel.b{background:var(--mint)} .pastel.c{background:var(--butter)}
+.pastel .row{display:flex;align-items:center;gap:9px}
+.chip{width:30px;height:30px;border-radius:10px;background:rgba(255,255,255,.75);display:grid;place-items:center;font-size:14px}
+.pastel .nm{font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.pastel .big{font-size:26px;font-weight:800;letter-spacing:-.03em;margin:14px 0 0;position:relative;z-index:1}
+.pastel.a .big{color:var(--peach-ink)} .pastel.b .big{color:var(--mint-ink)} .pastel.c .big{color:var(--butter-ink)}
+.pastel .big small{font-size:12px;font-weight:600;margin-left:5px}
+.pastel .delta{font-size:11.5px;font-weight:600;margin:2px 0 0;position:relative;z-index:1}
+.pastel svg{position:absolute;left:0;bottom:0;width:100%;height:52px}
+
+/* ---------- alertas ---------- */
+.alert{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-radius:14px;margin-bottom:9px;background:var(--danger-soft)}
+.alert.w{background:var(--warn-soft)}
+.alert:last-child{margin-bottom:0}
+.alert .chip{background:#fff;flex:none}
+.alert h3{margin:0;font-size:13.5px;font-weight:700}
+.alert p{margin:3px 0 0;font-size:12.5px;color:var(--ink-2)}
+.alert .val{margin-left:auto;font-size:14px;font-weight:800;white-space:nowrap;color:var(--danger)}
+.alert.w .val{color:var(--warn)}
+
+/* ---------- nota ---------- */
+.note{background:#F7F7FD;border-radius:14px;padding:15px 17px}
+.note p{margin:0;font-size:13.5px;line-height:1.62}
+.note .by{display:flex;align-items:center;gap:8px;margin-top:11px;font-size:11.5px;color:var(--ink-3)}
+.note .by .av{width:24px;height:24px;border-radius:50%;background:#DCD6FF;color:var(--brand);display:grid;place-items:center;font-size:9.5px;font-weight:700}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.fact{background:#F7F7FD;border-radius:12px;padding:10px 13px}
+.fact dt{font-size:11px;color:var(--ink-3);font-weight:500;margin:0}
+.fact dd{margin:2px 0 0;font-size:13px;font-weight:600}
+
+/* ---------- donuts ---------- */
+.donuts{display:flex;gap:16px;flex-wrap:wrap}
+.donut{display:flex;align-items:center;gap:13px;flex:1;min-width:170px}
+.ring{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ring i{width:56px;height:56px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:15px;font-weight:800;font-style:normal}
+.donut .t1{font-size:12px;color:var(--ink-3);margin:0;font-weight:500}
+.donut .t2{font-size:14px;font-weight:700;margin:1px 0 0}
+.donut .t3{font-size:11.5px;margin:4px 0 0;font-weight:600}
+
+/* ---------- chart ---------- */
+.legend{margin-left:auto;display:flex;gap:14px;font-size:11.5px;color:var(--ink-2);font-weight:500}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{width:9px;height:9px;border-radius:3px}
+
+/* ---------- switch ---------- */
+.switch{display:inline-flex;background:#F3F3FB;border-radius:999px;padding:3px;gap:2px}
+.switch button{appearance:none;border:none;background:none;font:inherit;font-size:12px;font-weight:600;color:var(--ink-2);padding:6px 14px;border-radius:999px;cursor:pointer}
+.switch button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.switch button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* ---------- tabla ---------- */
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;color:var(--ink-3);font-weight:600;padding:0 12px 9px 0}
+th.n,td.n{text-align:right;padding-right:0}
+td{padding:11px 12px 11px 0;border-top:1px solid var(--line);font-size:13px;font-weight:500}
+tr:first-child td{border-top:none}
+.mini{display:block;font-size:11px;color:var(--ink-3);font-weight:500;margin-top:2px}
+.mono{font-weight:600;letter-spacing:-.01em}
+.bar{height:6px;background:#F0F0F8;border-radius:99px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--brand)}
+.bar i.w{background:var(--warn)} .bar i.d{background:var(--danger)}
+.pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;display:inline-block}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.d{background:var(--danger-soft);color:var(--danger)}
+.pill.i{background:var(--brand-soft);color:var(--brand)}
+
+/* ---------- lista lateral ---------- */
+.who{display:flex;gap:11px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+.who:first-of-type{border-top:none;padding-top:0}
+.who .av{width:36px;height:36px;border-radius:13px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+.who.key .av{background:var(--brand);color:#fff}
+.who b{font-size:13px;font-weight:600;display:block}
+.who small{font-size:11.5px;color:var(--ink-3)}
+.who .pill{margin-left:auto}
+
+.feed{display:flex;gap:11px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+.feed:first-of-type{border-top:none;padding-top:0}
+.feed .chip{border-radius:11px;background:var(--brand-soft);font-size:13px}
+.feed b{font-size:13px;font-weight:600;display:block}
+.feed small{font-size:11px;color:var(--ink-3)}
+.feed .amt{margin-left:auto;font-size:13.5px;font-weight:700}
+
+.seg{display:flex;height:30px;border-radius:99px;overflow:hidden;margin-bottom:12px}
+.seg i{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;font-style:normal;color:#fff}
+.seg i.rest{background:#EDEDF7;color:var(--ink-2)}
+
+.linkall{display:block;text-align:center;margin-top:14px;font-size:12.5px;font-weight:600;color:var(--brand);text-decoration:none}
+.linkall:hover{text-decoration:underline}
+[hidden]{display:none!important}
+
+@media (max-width:1080px){
+  .cols{grid-template-columns:1fr}
+}
+@media (max-width:820px){
+  .app{grid-template-columns:1fr}
+  .side{position:static;height:auto;flex-direction:row;align-items:center;gap:14px;overflow-x:auto;padding:14px}
+  .nav{flex-direction:row;gap:6px}.nav-lbl{display:none}.nav a{white-space:nowrap}
+  .main{padding:16px 14px 32px}
+  .pastels{grid-template-columns:1fr}
+  .search{display:none}
+  .top h1{font-size:19px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark">FD</div>
+      <div><b>Fadesa</b><span>Vista 360</span></div>
+    </div>
+    <nav class="nav">
+      <span class="nav-lbl">Cuenta</span>
+      <a href="#" class="on"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Resumen</a>
+      <a href="#"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-6 4 4 5-8 4 5"/></svg>Comercial</a>
+      <a href="#"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>Cartera<span class="dot"></span></a>
+      <a href="#"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg>Planta</a>
+      <span class="nav-lbl">Relación</span>
+      <a href="#"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>Contactos</a>
+      <a href="#"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Historial</a>
+      <a href="#"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>Visitas y tareas</a>
+    </nav>
+    <div class="nav">
+      <a href="#"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1V21a2 2 0 11-4 0v-.1A1.6 1.6 0 007 19.4l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.6 1.6 0 003 14H3a2 2 0 110-4h.1A1.6 1.6 0 004.6 7l-.1-.1a2 2 0 112.8-2.8l.1.1A1.6 1.6 0 0010 4.6V4a2 2 0 114 0v.1a1.6 1.6 0 002.7 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1A1.6 1.6 0 0021 10h0a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></svg>Configuración</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="top">
+      <div>
+        <p class="crumb">Clientes · Metales y plásticos</p>
+        <h1>Vista 360 del cliente</h1>
+      </div>
+      <label class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input placeholder="Buscar cliente o código SAP">
+      </label>
+      <button class="iconbtn" aria-label="Notificaciones">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5B5F86" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        <span class="dot"></span>
+      </button>
+      <div class="me"><span class="av">MC</span><div><b>Miyu Chang</b><small>KAM Metales</small></div></div>
+    </div>
+
+    <div class="cols">
+      <!-- ============ COLUMNA PRINCIPAL ============ -->
+      <div class="stack">
+
+        <!-- HERO -->
+        <div class="hero">
+          <div class="hero-top">
+            <span class="tag">SAP 100482</span>
+            <span class="tag">Cliente desde 2019</span>
+            <span class="tag live">Riesgo bajo</span>
+          </div>
+          <h2>Fruvesa Food SAS</h2>
+          <p class="sub">Envases metálicos y plásticos — La Estrella, Colombia. Crédito a 60 días.</p>
+          <div class="hero-foot">
+            <div class="kams"><span class="av">MC</span><span class="av">CV</span></div>
+            <div class="kam-txt"><b>Miyu Chang y Carlos Villacís</b>Reasignada hace 2 días</div>
+            <button class="cta">Registrar llamada</button>
+          </div>
+        </div>
+
+        <!-- PASTELES -->
+        <div class="pastels">
+          <div class="pastel a">
+            <div class="row"><span class="chip">💰</span><span class="nm">Cartera total</span></div>
+            <p class="big">$4.51<small>M</small></p>
+            <p class="delta" style="color:var(--peach-ink)">18.9% en mora ↑</p>
+            <svg viewBox="0 0 200 52" preserveAspectRatio="none"><path d="M0 34 C25 18 45 40 70 30 C95 20 115 38 140 26 C165 15 185 30 200 22 L200 52 L0 52Z" fill="rgba(194,65,12,.16)"/></svg>
+          </div>
+          <div class="pastel b">
+            <div class="row"><span class="chip">🎯</span><span class="nm">Share of wallet</span></div>
+            <p class="big">85<small>%</small></p>
+            <p class="delta" style="color:var(--mint-ink)">+3 pts vs 2025 ↑</p>
+            <svg viewBox="0 0 200 52" preserveAspectRatio="none"><path d="M0 30 C22 34 40 16 62 22 C88 29 108 12 132 20 C158 28 178 14 200 20 L200 52 L0 52Z" fill="rgba(14,124,99,.16)"/></svg>
+          </div>
+          <div class="pastel c">
+            <div class="row"><span class="chip">📦</span><span class="nm">Oportunidades</span></div>
+            <p class="big">$1.07<small>M</small></p>
+            <p class="delta" style="color:var(--butter-ink)">2 abiertas, 1 cierra en 4 días</p>
+            <svg viewBox="0 0 200 52" preserveAspectRatio="none"><path d="M0 26 C28 32 44 20 68 24 C96 29 112 16 138 22 C162 28 180 20 200 26 L200 52 L0 52Z" fill="rgba(161,98,7,.16)"/></svg>
+          </div>
+        </div>
+
+        <!-- ALERTAS -->
+        <div class="card">
+          <div class="chead">
+            <h2>Atiende esto antes de llamar</h2>
+            <span class="aside">Datos al 4 sep, 8:03 a.m.</span>
+          </div>
+          <div class="alert">
+            <span class="chip">⚠️</span>
+            <div><h3>Cartera vencida 61–120 días</h3><p>Confirma con financiera antes de ofrecer crédito nuevo.</p></div>
+            <span class="val">$131.9K</span>
+          </div>
+          <div class="alert w">
+            <span class="chip">⏱️</span>
+            <div><h3>Oferta de tapas corona para exportación</h3><p>Quedó pendiente desde la reunión de octubre.</p></div>
+            <span class="val">4 días</span>
+          </div>
+        </div>
+
+        <!-- NOTA DE VISITA -->
+        <div class="card">
+          <div class="chead"><h2>Última visita</h2><span class="aside">Nota en CRM</span></div>
+          <div class="note">
+            <p>Cliente sensible al precio, siempre pide 60 días de crédito. La reunión de octubre quedó pendiente: quieren ver oferta de tapas corona para exportación antes de fin de mes.</p>
+            <div class="by"><span class="av">LR</span> Lucas Rueda, KAM anterior — octubre 2025</div>
+          </div>
+          <div class="facts">
+            <div class="fact"><dt>Decide de verdad</dt><dd>Jefe financiero</dd></div>
+            <div class="fact"><dt>Canal preferido</dt><dd>Email, trato formal</dd></div>
+          </div>
+        </div>
+
+        <!-- VENTAS -->
+        <div class="card">
+          <div class="chead">
+            <h2>Venta mensual 2026</h2>
+            <div class="legend">
+              <span><i class="sw" style="background:var(--brand)"></i>Real</span>
+              <span><i class="sw" style="background:#DCD8FB"></i>Presupuesto</span>
+            </div>
+          </div>
+          <div class="donuts" style="margin-bottom:20px">
+            <div class="donut">
+              <div class="ring" style="background:conic-gradient(var(--brand) 0 83%, #EEECFE 83% 100%)"><i>83%</i></div>
+              <div><p class="t1">Venta vs</p><p class="t2">Presupuesto</p><p class="t3" style="color:var(--warn)">17 pts por debajo</p></div>
+            </div>
+            <div class="donut">
+              <div class="ring" style="background:conic-gradient(var(--ok) 0 93%, #E6F6EE 93% 100%)"><i>93%</i></div>
+              <div><p class="t1">Venta vs</p><p class="t2">Forecast</p><p class="t3" style="color:var(--ok)">Dentro de rango</p></div>
+            </div>
+          </div>
+          <svg id="chart" viewBox="0 0 660 190" width="100%" height="190" role="img" aria-label="Venta real contra presupuesto por mes de 2026"></svg>
+        </div>
+
+        <!-- DIÁMETROS -->
+        <div class="card">
+          <div class="chead">
+            <h2>Cumplimiento por diámetro</h2>
+            <span class="switch" style="margin-left:auto">
+              <button aria-pressed="true" data-d="cuerpos">Cuerpos</button>
+              <button aria-pressed="false" data-d="tapas">Tapas</button>
+            </span>
+          </div>
+          <table>
+            <thead><tr><th>Referencia</th><th class="n">Venta / ppto USD</th><th class="n">Unidades</th><th class="n" style="width:130px">Cumplimiento</th></tr></thead>
+            <tbody id="diam"></tbody>
+          </table>
+        </div>
+
+        <!-- CARTERA -->
+        <div class="card">
+          <div class="chead">
+            <h2>Cartera por antigüedad</h2>
+            <span class="switch" style="margin-left:auto">
+              <button aria-pressed="true" data-c="todas">Todas</button>
+              <button aria-pressed="false" data-c="metales">Metales</button>
+              <button aria-pressed="false" data-c="plasticos">Plásticos</button>
+            </span>
+          </div>
+          <table>
+            <thead><tr><th>Antigüedad</th><th class="n">Saldo</th><th class="n" style="width:170px">Peso</th></tr></thead>
+            <tbody id="car"></tbody>
+          </table>
+          <a class="linkall" href="#">Abrir análisis completo en BI Builder</a>
+        </div>
+      </div>
+
+      <!-- ============ COLUMNA LATERAL ============ -->
+      <div class="stack">
+
+        <div class="card">
+          <div class="chead"><h2>Quién es quién</h2></div>
+          <div class="who key"><span class="av">JF</span><div><b>Jefe financiero</b><small>Email · condiciones de pago</small></div><span class="pill i">Decide</span></div>
+          <div class="who"><span class="av">GA</span><div><b>Gerencia</b><small>Llamada · influencia media</small></div><span class="pill">Influye</span></div>
+          <div class="who"><span class="av">CC</span><div><b>Control de calidad</b><small>WhatsApp · consultas técnicas</small></div><span class="pill">Técnico</span></div>
+        </div>
+
+        <div class="card">
+          <div class="chead"><h2>Oportunidades</h2>
+            <span class="switch" style="margin-left:auto">
+              <button aria-pressed="true" data-o="todas">Todas</button>
+              <button aria-pressed="false" data-o="Metales">Met.</button>
+              <button aria-pressed="false" data-o="Plásticos">Plás.</button>
+            </span>
+          </div>
+          <div id="opp"></div>
+        </div>
+
+        <div class="card">
+          <div class="chead"><h2>Share of wallet</h2><span class="aside">Excel en Bitrix</span></div>
+          <div class="seg"><i style="width:85%;background:var(--brand)">Fadesa 85%</i><i class="rest" style="width:15%">Otros</i></div>
+          <table>
+            <tbody>
+              <tr><td class="mono">C202/200X308R<span class="mini">52.2M unidades</span></td><td class="n"><span class="pill ok">100%</span></td></tr>
+              <tr><td class="mono">C211X106L EO<span class="mini">142.6M unidades</span></td><td class="n"><span class="pill ok">85%</span></td></tr>
+              <tr><td class="mono">C300/214X40TR<span class="mini">5.8M unidades</span></td><td class="n"><span class="pill w">44%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="chead"><h2>Cerradoras en planta</h2></div>
+          <table>
+            <tbody>
+              <tr><td class="mono">C202/200X308R<span class="mini">CS-8500 Ferrum · overhaul mar 2025</span></td><td class="n"><span class="pill ok">Operativa</span></td></tr>
+              <tr><td class="mono">C211X106L EO<span class="mini">CS-6200 Ferrum · overhaul ene 2024</span></td><td class="n"><span class="pill ok">Operativa</span></td></tr>
+              <tr><td class="mono">C300/214X40TR<span class="mini">CS-4100 Angelus · overhaul ago 2022</span></td><td class="n"><span class="pill w">Mantenim.</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="chead"><h2>Historial</h2></div>
+          <div class="feed"><span class="chip">🏭</span><div><b>Visita técnica a planta</b><small>Revisión de la cerradora C202</small></div><span class="amt" style="font-size:11.5px;color:var(--ink-3)">2025</span></div>
+          <div class="feed"><span class="chip" style="background:var(--danger-soft)">📉</span><div><b>Oportunidad perdida</b><small>Envases 2L, sin disponibilidad</small></div><span class="amt" style="font-size:11.5px;color:var(--ink-3)">2025</span></div>
+          <div class="feed"><span class="chip" style="background:var(--warn-soft)">🔧</span><div><b>Reclamo resuelto</b><small>Escurrimiento de sello</small></div><span class="amt" style="font-size:11.5px;color:var(--ink-3)">2024</span></div>
+          <div class="feed"><span class="chip" style="background:var(--ok-soft)">🏆</span><div><b>Licitación ganada</b><small>Tapas corona, por tiempo de entrega</small></div><span class="amt" style="font-size:11.5px;color:var(--ink-3)">2024</span></div>
+          <a class="linkall" href="#">Ver historial completo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---- chart ---- */
+(function(){
+  var m=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  var bud=[245,255,250,265,270,260,255,270,265,280,275,260];
+  var real=[230,240,235,250,245,238,null,null,null,null,null,null];
+  var W=660,H=190,pl=36,pt=26,pb=26,max=300;
+  var iw=W-pl-8, ih=H-pt-pb, step=iw/12, bw=9, gap=5;
+  var y=function(v){return pt+ih-(v/max)*ih;};
+  var s='';
+  [0,100,200,300].forEach(function(g){
+    s+='<line x1="'+pl+'" x2="'+W+'" y1="'+y(g)+'" y2="'+y(g)+'" stroke="#F0F0F8"/>'+
+       '<text x="0" y="'+(y(g)+4)+'" font-size="10" font-weight="500" fill="#8E92B0">'+g+'K</text>';
+  });
+  // línea de promedio real
+  var avg=239, ay=y(avg);
+  s+='<line x1="'+pl+'" x2="'+W+'" y1="'+ay+'" y2="'+ay+'" stroke="#181A3A" stroke-width="1" stroke-dasharray="4 4" opacity=".35"/>';
+  s+='<rect x="'+pl+'" y="'+(ay-10)+'" width="60" height="19" rx="9" fill="#181A3A"/>';
+  s+='<text x="'+(pl+30)+'" y="'+(ay+3)+'" font-size="10" font-weight="700" fill="#fff" text-anchor="middle">$239K prom</text>';
+  m.forEach(function(lbl,i){
+    var cx=pl+step*i+step/2, on=(i===5);
+    var bx=cx-bw-gap/2, rx=cx+gap/2;
+    var hb=ih+pt-y(bud[i]);
+    s+='<rect x="'+bx+'" y="'+y(bud[i])+'" width="'+bw+'" height="'+hb+'" rx="4.5" fill="#DCD8FB"/>';
+    if(real[i]!==null){
+      var hr=ih+pt-y(real[i]);
+      s+='<rect x="'+rx+'" y="'+y(real[i])+'" width="'+bw+'" height="'+hr+'" rx="4.5" fill="'+(on?'#4B3FE4':'#B7AEFB')+'"/>';
+    }
+    s+='<text x="'+cx+'" y="'+(H-8)+'" font-size="10" font-weight="'+(on?'700':'500')+'" fill="'+(on?'#181A3A':'#8E92B0')+'" text-anchor="middle">'+lbl+'</text>';
+  });
+  document.getElementById('chart').innerHTML=s;
+})();
+
+/* ---- diámetros ---- */
+var diam={
+  cuerpos:[{d:'Ø307',pu:420,vu:390,p:93,pn:1200,vn:1100},{d:'Ø401',pu:310,vu:295,p:95,pn:900,vn:860},{d:'Ø603',pu:180,vu:150,p:83,pn:500,vn:410}],
+  tapas:[{d:'26mm',pu:260,vu:242,p:93,pn:3400,vn:3150},{d:'38mm',pu:190,vu:175,p:92,pn:2100,vn:1930},{d:'53mm',pu:140,vu:98,p:70,pn:1500,vn:1050}]
+};
+function drawDiam(k){
+  document.getElementById('diam').innerHTML=diam[k].map(function(r){
+    var c=r.p>=90?'':(r.p>=80?'w':'d');
+    return '<tr><td class="mono">'+r.d+'</td>'+
+      '<td class="n">$'+r.vu+'K <span style="color:var(--ink-3)">/ $'+r.pu+'K</span></td>'+
+      '<td class="n">'+r.vn+'K <span style="color:var(--ink-3)">/ '+r.pn+'K</span></td>'+
+      '<td class="n">'+r.p+'%<span class="bar"><i class="'+c+'" style="width:'+r.p+'%"></i></span></td></tr>';
+  }).join('');
+}
+drawDiam('cuerpos');
+
+/* ---- cartera ---- */
+var car={
+  todas:{r:[{l:'Corriente',v:'$3.73M',p:83,c:''},{l:'1–30 días',v:'$630K',p:14,c:'w'},{l:'61–120 días',v:'$149.9K',p:3,c:'d'}]},
+  metales:{r:[{l:'Corriente',v:'$2.73M',p:83,c:''},{l:'1–30 días',v:'$420K',p:13,c:'w'},{l:'61–120 días',v:'$131.9K',p:4,c:'d'}]},
+  plasticos:{r:[{l:'Corriente',v:'$1.00M',p:81,c:''},{l:'1–30 días',v:'$210K',p:17,c:'w'},{l:'61–120 días',v:'$18K',p:2,c:'d'}]}
+};
+function drawCar(k){
+  document.getElementById('car').innerHTML=car[k].r.map(function(r){
+    return '<tr><td>'+r.l+'</td><td class="n">'+r.v+'</td><td class="n">'+r.p+'%<span class="bar"><i class="'+r.c+'" style="width:'+r.p+'%"></i></span></td></tr>';
+  }).join('');
+}
+drawCar('todas');
+
+/* ---- oportunidades ---- */
+var opps=[{n:'Envase 1 gal — Seres',e:'Cotización final',c:'i',dv:'Plásticos',v:'$420K',ic:'🥫'},
+          {n:'Tapas corona export',e:'Negociación',c:'w',dv:'Metales',v:'$650K',ic:'🔩'}];
+function drawOpp(f){
+  var l=f==='todas'?opps:opps.filter(function(o){return o.dv===f;});
+  document.getElementById('opp').innerHTML=l.map(function(o){
+    return '<div class="feed"><span class="chip">'+o.ic+'</span><div><b>'+o.n+'</b><small>'+o.dv+'</small></div>'+
+      '<div style="margin-left:auto;text-align:right"><span class="amt" style="display:block">'+o.v+'</span><span class="pill '+o.c+'" style="margin-top:3px">'+o.e+'</span></div></div>';
+  }).join('')||'<p style="color:var(--ink-3);font-size:13px;margin:6px 0">Sin oportunidades abiertas en esta división.</p>';
+}
+drawOpp('todas');
+
+/* ---- switches ---- */
+function wire(attr,fn){
+  document.querySelectorAll('['+attr+']').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('['+attr+']').forEach(function(x){x.setAttribute('aria-pressed','false');});
+      b.setAttribute('aria-pressed','true');
+      fn(b.getAttribute(attr));
+    });
+  });
+}
+wire('data-d',drawDiam); wire('data-c',drawCar); wire('data-o',drawOpp);
+</script>
+</body>
+</html>

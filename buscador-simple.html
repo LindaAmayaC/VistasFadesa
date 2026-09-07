@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vista 360 FADESA — buscador de clientes + detalle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F4FB;--card:#FFF;--ink:#181A3A;--ink-2:#5B5F86;--ink-3:#8E92B0;--line:#ECEDF6;
+  --brand:#4B3FE4;--brand-soft:#EEECFE;
+  --peach:#FFEDE4;--peach-ink:#C2410C;--mint:#E3F6EF;--mint-ink:#0E7C63;--butter:#FFF4D9;--butter-ink:#A16207;
+  --danger:#E14B4B;--danger-soft:#FDECEC;--warn:#D98407;--warn-soft:#FDF3E3;--ok:#18A05F;--ok-soft:#E6F6EE;
+  --sh:0 1px 2px rgba(24,26,58,.04),0 6px 18px rgba(24,26,58,.05);--r:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',-apple-system,sans-serif;font-size:14px;line-height:1.5;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.side{padding:24px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:26px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px}
+.brand-mark{width:34px;height:34px;border-radius:11px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+.brand b{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.brand span{display:block;font-size:11px;color:var(--ink-3);font-weight:500;margin-top:-2px}
+.nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.nav-lbl{font-size:11px;color:var(--ink-3);font-weight:600;padding:12px 12px 5px}
+.nav a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;color:var(--ink-2);text-decoration:none;font-size:13.5px;font-weight:500;cursor:pointer}
+.nav a:hover{background:#EAEBF6;color:var(--ink)}
+.nav a.on{background:var(--card);color:var(--brand);font-weight:600;box-shadow:var(--sh)}
+.ic{width:18px;height:18px;flex:none;opacity:.85}
+.main{padding:22px 26px 46px;min-width:0}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px 22px}
+.chead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.chead h2{font-size:16px;font-weight:700;margin:0;letter-spacing:-.01em}
+.chead .aside{margin-left:auto;font-size:11.5px;color:var(--ink-3);font-weight:500}
+[hidden]{display:none!important}
+
+/* ---------- encabezado + buscador ---------- */
+.pagehead{margin-bottom:18px}
+.ph-top{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.ph-top h1{font-size:23px;font-weight:800;letter-spacing:-.025em;margin:0}
+.ph-sub{margin:2px 0 0;font-size:12.5px;color:var(--ink-3);font-weight:500}
+.ph-top .me{margin-left:auto}
+.searchwrap{position:relative}
+.bigsearch{display:flex;align-items:center;gap:11px;background:#fff;border-radius:14px;padding:12px 16px;box-shadow:var(--sh);border:1px solid transparent}
+.bigsearch:focus-within{border-color:#CFC9FA;box-shadow:0 0 0 4px rgba(75,63,228,.09)}
+.bigsearch input{border:none;outline:none;font:inherit;font-size:14px;flex:1;min-width:0;color:var(--ink)}
+.bigsearch input::placeholder{color:var(--ink-3)}
+.bigsearch kbd{font:inherit;font-size:11px;font-weight:600;color:var(--ink-3);background:#F3F3FB;border-radius:6px;padding:3px 7px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.chip-btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink-2);font:inherit;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer}
+.chip-btn:hover{border-color:#CFC9FA;color:var(--ink)}
+.chip-btn.solid{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip-btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* resultados en vivo */
+.results{position:absolute;left:0;right:0;top:56px;background:#fff;border-radius:14px;box-shadow:0 18px 40px rgba(24,26,58,.18);padding:8px;z-index:5;color:var(--ink)}
+.res{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;cursor:pointer}
+.res:hover{background:#F5F5FC}
+.res .av{width:34px;height:34px;border-radius:11px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:11.5px;font-weight:700;flex:none}
+.res b{font-size:13.5px;font-weight:600;display:block}
+.res small{font-size:11.5px;color:var(--ink-3)}
+.res .tail{margin-left:auto;text-align:right}
+
+.pchip{width:30px;height:30px;border-radius:10px;background:rgba(255,255,255,.75);display:grid;place-items:center;font-size:14px}
+
+/* ---------- tabla clientes ---------- */
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;color:var(--ink-3);font-weight:600;padding:0 12px 10px 0;white-space:nowrap}
+th.n,td.n{text-align:right;padding-right:0}
+td{padding:12px 12px 12px 0;border-top:1px solid var(--line);font-size:13px;font-weight:500;vertical-align:middle}
+tr.clickable{cursor:pointer}
+tr.clickable:hover td{background:#FAFAFE}
+.cname{display:flex;align-items:center;gap:11px}
+.cname .av{width:36px;height:36px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:11.5px;font-weight:700;flex:none}
+.cname b{font-size:13.5px;font-weight:600;display:block}
+.mini{display:block;font-size:11px;color:var(--ink-3);font-weight:500;margin-top:1px}
+.pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;display:inline-block;background:#F1F1F9;color:var(--ink-2)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.d{background:var(--danger-soft);color:var(--danger)}.pill.i{background:var(--brand-soft);color:var(--brand)}
+.lamp{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.bar{height:6px;background:#F0F0F8;border-radius:99px;overflow:hidden;margin-top:6px;width:90px;margin-left:auto}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--brand)}
+.bar i.w{background:var(--warn)}.bar i.d{background:var(--danger)}
+.alerts-cell{display:flex;gap:5px;justify-content:flex-end}
+.abadge{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:11px}
+.abadge.d{background:var(--danger-soft)}.abadge.w{background:var(--warn-soft)}
+
+/* ---------- barra superior del detalle ---------- */
+.top{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.back{appearance:none;border:none;background:var(--card);box-shadow:var(--sh);border-radius:999px;padding:9px 16px 9px 12px;font:inherit;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;display:flex;align-items:center;gap:7px}
+.back:hover{color:var(--ink)}
+.switcher{position:relative}
+.switcher>button{appearance:none;border:none;background:var(--card);box-shadow:var(--sh);border-radius:999px;padding:7px 16px 7px 7px;font:inherit;cursor:pointer;display:flex;align-items:center;gap:10px}
+.switcher .av{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:10.5px;font-weight:700}
+.switcher b{font-size:13px;font-weight:700;display:block;text-align:left}
+.switcher small{font-size:10.5px;color:var(--ink-3);display:block;text-align:left}
+.dd{position:absolute;top:52px;left:0;width:330px;background:#fff;border-radius:14px;box-shadow:0 18px 40px rgba(24,26,58,.18);padding:8px;z-index:20}
+.dd .hd{font-size:11px;color:var(--ink-3);font-weight:600;padding:8px 12px 4px}
+.me{margin-left:auto;display:flex;align-items:center;gap:9px;background:var(--card);border-radius:999px;padding:5px 14px 5px 5px;box-shadow:var(--sh)}
+.me .av{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700}
+.me b{font-size:12.5px;font-weight:600;display:block}.me small{font-size:10.5px;color:var(--ink-3)}
+
+/* ---------- detalle ---------- */
+.hero{border-radius:var(--r);padding:24px 26px;color:#fff;position:relative;overflow:hidden;margin-bottom:18px;
+  background:linear-gradient(120deg,#4B3FE4 0%,#6A55F0 52%,#8B6BFF 100%);box-shadow:0 10px 26px rgba(75,63,228,.22)}
+.hero::after{content:'';position:absolute;right:-70px;top:-90px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.09)}
+.hero .tag{font-size:11px;font-weight:600;background:rgba(255,255,255,.18);border-radius:999px;padding:4px 11px;position:relative;z-index:1}
+.hero .tag.live{background:#fff;color:var(--brand)}
+.hero h2{font-size:26px;font-weight:800;letter-spacing:-.025em;margin:12px 0 4px;position:relative;z-index:1}
+.hero p.sub{margin:0;font-size:13px;color:rgba(255,255,255,.78);position:relative;z-index:1}
+.alert{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-radius:14px;margin-bottom:9px;background:var(--danger-soft)}
+.alert.w{background:var(--warn-soft)}.alert:last-child{margin-bottom:0}
+.alert .pchip{background:#fff;flex:none}
+.alert h3{margin:0;font-size:13.5px;font-weight:700}
+.alert p{margin:3px 0 0;font-size:12.5px;color:var(--ink-2)}
+.alert .val{margin-left:auto;font-size:14px;font-weight:800;color:var(--danger);white-space:nowrap}
+.alert.w .val{color:var(--warn)}
+.ghost{border:1px dashed #D9DAEA;border-radius:var(--r);padding:26px;text-align:center;color:var(--ink-3);font-size:13px;font-weight:500;background:#FAFAFE}
+
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:14px;gap:12px}
+  .nav{flex-direction:row}.nav-lbl{display:none}.nav a{white-space:nowrap}
+  .main{padding:16px 14px 34px}
+  .ph-top h1{font-size:19px}
+  .ph-top .me{display:none}
+  .hidecol{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="brand-mark">FD</div><div><b>Fadesa</b><span>Vista 360</span></div></div>
+    <nav class="nav">
+      <span class="nav-lbl">Comercial</span>
+      <a class="on" id="nav-cli"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3.2-5.5 7-5.5s7 2 7 5.5"/><path d="M17 11a3 3 0 100-6"/><path d="M18 20c0-2.4-.9-4.2-2.4-5.3"/></svg>Mis clientes</a>
+      <a><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-6 4 4 5-8 4 5"/></svg>Pipeline</a>
+      <a><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/></svg>Cartera</a>
+      <span class="nav-lbl">Operación</span>
+      <a><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg>Cerradoras</a>
+      <a><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>Visitas</a>
+    </nav>
+  </aside>
+
+  <div class="main">
+
+    <!-- ================= PANTALLA 1: BUSCAR CLIENTES ================= -->
+    <div id="v-list">
+      <div class="pagehead">
+        <div class="ph-top">
+          <div>
+            <h1>Mis clientes</h1>
+            <p class="ph-sub">14 cuentas asignadas · datos al 4 sep, 8:03 a.m.</p>
+          </div>
+          <div class="me"><span class="av">MC</span><div><b>Miyu Chang</b><small>KAM Metales</small></div></div>
+        </div>
+        <div class="searchwrap">
+          <div class="bigsearch">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8E92B0" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input id="q" placeholder="Busca por nombre o código SAP" autocomplete="off">
+            <kbd>⌘K</kbd>
+          </div>
+          <div class="results" id="res" hidden></div>
+        </div>
+        <div class="chips">
+          <button class="chip-btn solid" data-f="todos">Todos</button>
+          <button class="chip-btn" data-f="alerta">Con alerta</button>
+          <button class="chip-btn" data-f="mora">En mora</button>
+          <button class="chip-btn" data-f="Metales">Metales</button>
+          <button class="chip-btn" data-f="Plásticos">Plásticos</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h2 id="listTitle">Mis clientes</h2></div>
+        <table>
+          <thead><tr>
+            <th>Cliente</th>
+            <th class="hidecol">División</th>
+            <th class="n">Cartera</th>
+            <th class="n hidecol">Mora</th>
+            <th class="n hidecol" style="width:120px">Cumpl. ppto</th>
+            <th class="n">Alertas</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= PANTALLA 2: DETALLE ================= -->
+    <div id="v-detail" hidden>
+      <div class="top">
+        <button class="back" id="back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>
+          Mis clientes
+        </button>
+        <div class="switcher">
+          <button id="swBtn"><span class="av" id="swAv">FF</span><span><b id="swName">Fruvesa Food SAS</b><small id="swSap">SAP 100482</small></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8E92B0" stroke-width="2.2" style="margin-left:4px"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="dd" id="dd" hidden><div class="hd">Cambiar de cliente</div><div id="ddList"></div></div>
+        </div>
+        <div class="me"><span class="av">MC</span><div><b>Miyu Chang</b><small>KAM Metales</small></div></div>
+      </div>
+
+      <div class="hero">
+        <div><span class="tag" id="dSap">SAP 100482</span> <span class="tag" id="dSince">Cliente desde 2019</span> <span class="tag live" id="dRisk">Riesgo bajo</span></div>
+        <h2 id="dName">Fruvesa Food SAS</h2>
+        <p class="sub" id="dSub">Envases metálicos y plásticos — La Estrella, Colombia.</p>
+      </div>
+
+      <div class="card" style="margin-bottom:18px">
+        <div class="chead"><h2>Atiende esto antes de llamar</h2><span class="aside">Datos al 4 sep, 8:03 a.m.</span></div>
+        <div id="dAlerts"></div>
+      </div>
+
+      <div class="ghost">Aquí continúa la Vista 360 completa: nota de la última visita, ventas vs presupuesto, cartera, contactos, cerradoras e historial.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var clientes=[
+  {n:'Fruvesa Food SAS',sap:'100482',ini:'FF',div:'Metales y plásticos',ciu:'La Estrella, Colombia',desde:2019,cart:'$4.51M',mora:18.9,ppto:83,riesgo:'bajo',
+   al:[{t:'d',h:'Cartera vencida 61–120 días',p:'Confirma con financiera antes de ofrecer crédito nuevo.',v:'$131.9K',i:'⚠️'},
+       {t:'w',h:'Oferta de tapas corona export',p:'Quedó pendiente desde la reunión de octubre.',v:'4 días',i:'⏱️'}]},
+  {n:'Conservas del Valle',sap:'100731',ini:'CV',div:'Metales',ciu:'Palmira, Colombia',desde:2015,cart:'$6.20M',mora:4.1,ppto:104,riesgo:'bajo',
+   al:[]},
+  {n:'Alimentos Andinos SAS',sap:'100918',ini:'AA',div:'Plásticos',ciu:'Bogotá, Colombia',desde:2022,cart:'$1.84M',mora:31.5,ppto:67,riesgo:'alto',
+   al:[{t:'d',h:'Mora superior al 30%',p:'Cuenta bloqueada para despachos nuevos.',v:'$580K',i:'⚠️'}]},
+  {n:'Pesquera del Pacífico',sap:'101044',ini:'PP',div:'Metales',ciu:'Buenaventura, Colombia',desde:2018,cart:'$3.05M',mora:11.2,ppto:91,riesgo:'medio',
+   al:[{t:'w',h:'Cerradora requiere mantenimiento',p:'Último overhaul en agosto 2022.',v:'C300',i:'🔧'}]},
+  {n:'Lácteos Sabana',sap:'101190',ini:'LS',div:'Plásticos',ciu:'Chía, Colombia',desde:2021,cart:'$2.78M',mora:6.4,ppto:97,riesgo:'bajo',al:[]}
+];
+var lampC={bajo:'var(--ok)',medio:'var(--warn)',alto:'var(--danger)'};
+var filtro='todos';
+
+function pass(c){
+  if(filtro==='alerta') return c.al.length>0;
+  if(filtro==='mora') return c.mora>15;
+  if(filtro==='Metales'||filtro==='Plásticos') return c.div.indexOf(filtro.replace('á','á'))>-1;
+  return true;
+}
+function drawRows(){
+  var l=clientes.filter(pass);
+  document.getElementById('rows').innerHTML=l.map(function(c,i){
+    var pc=c.ppto>=95?'':(c.ppto>=80?'w':'d');
+    var mc=c.mora>20?'d':(c.mora>10?'w':'ok');
+    return '<tr class="clickable" data-i="'+clientes.indexOf(c)+'">'+
+      '<td><div class="cname"><span class="av">'+c.ini+'</span><span><b>'+c.n+'</b>'+
+        '<span class="mini"><span class="lamp" style="background:'+lampC[c.riesgo]+'"></span>SAP '+c.sap+' · '+c.ciu+'</span></span></div></td>'+
+      '<td class="hidecol"><span class="pill">'+c.div+'</span></td>'+
+      '<td class="n"><b>'+c.cart+'</b></td>'+
+      '<td class="n hidecol"><span class="pill '+mc+'">'+c.mora+'%</span></td>'+
+      '<td class="n hidecol">'+c.ppto+'%<span class="bar"><i class="'+pc+'" style="width:'+Math.min(c.ppto,100)+'%"></i></span></td>'+
+      '<td class="n"><div class="alerts-cell">'+(c.al.length?c.al.map(function(a){return '<span class="abadge '+a.t+'">'+a.i+'</span>';}).join(''):'<span class="mini">—</span>')+'</div></td>'+
+    '</tr>';
+  }).join('')||'<tr><td colspan="6" style="color:var(--ink-3);padding:22px 0;text-align:center">Ningún cliente coincide con este filtro.</td></tr>';
+  document.getElementById('listTitle').textContent = filtro==='todos'?'Mis clientes':'Mis clientes · '+l.length+' resultado'+(l.length===1?'':'s');
+}
+drawRows();
+
+document.querySelectorAll('[data-f]').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('[data-f]').forEach(function(x){x.classList.remove('solid');});
+    b.classList.add('solid'); filtro=b.dataset.f; drawRows();
+  });
+});
+
+/* buscador en vivo */
+var q=document.getElementById('q'), res=document.getElementById('res');
+q.addEventListener('input',function(){
+  var v=q.value.trim().toLowerCase();
+  if(!v){res.hidden=true;return;}
+  var hits=clientes.filter(function(c){return (c.n+' '+c.sap).toLowerCase().indexOf(v)>-1;});
+  res.innerHTML=hits.length?hits.map(function(c){
+    return '<div class="res" data-i="'+clientes.indexOf(c)+'"><span class="av">'+c.ini+'</span>'+
+      '<span><b>'+c.n+'</b><small>SAP '+c.sap+' · '+c.div+'</small></span>'+
+      '<span class="tail"><b style="font-size:13px">'+c.cart+'</b><small>'+(c.al.length?c.al.length+' alerta'+(c.al.length>1?'s':''):'sin alertas')+'</small></span></div>';
+  }).join(''):'<div style="padding:14px;color:var(--ink-3);font-size:13px">Sin resultados. Prueba con el código SAP.</div>';
+  res.hidden=false;
+});
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.bigsearch')&&!e.target.closest('#res')) res.hidden=true;
+  if(!e.target.closest('.switcher')) document.getElementById('dd').hidden=true;
+});
+
+/* navegación */
+function openC(i){
+  var c=clientes[i];
+  document.getElementById('dName').textContent=c.n;
+  document.getElementById('dSap').textContent='SAP '+c.sap;
+  document.getElementById('dSince').textContent='Cliente desde '+c.desde;
+  document.getElementById('dRisk').textContent='Riesgo '+c.riesgo;
+  document.getElementById('dSub').textContent='Envases '+c.div.toLowerCase()+' — '+c.ciu+'.';
+  document.getElementById('swName').textContent=c.n;
+  document.getElementById('swSap').textContent='SAP '+c.sap;
+  document.getElementById('swAv').textContent=c.ini;
+  document.getElementById('dAlerts').innerHTML=c.al.length?c.al.map(function(a){
+    return '<div class="alert '+(a.t==='w'?'w':'')+'"><span class="pchip">'+a.i+'</span><div><h3>'+a.h+'</h3><p>'+a.p+'</p></div><span class="val">'+a.v+'</span></div>';
+  }).join(''):'<div class="ghost" style="padding:18px">Sin alertas abiertas. La cuenta está al día.</div>';
+  document.getElementById('v-list').hidden=true;
+  document.getElementById('v-detail').hidden=false;
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-i]');
+  if(t){openC(+t.dataset.i); document.getElementById('dd').hidden=true; res.hidden=true; q.value='';}
+});
+document.getElementById('back').addEventListener('click',function(){
+  document.getElementById('v-detail').hidden=true;
+  document.getElementById('v-list').hidden=false;
+});
+document.getElementById('nav-cli').addEventListener('click',function(){
+  document.getElementById('v-detail').hidden=true;
+  document.getElementById('v-list').hidden=false;
+});
+
+/* switcher */
+document.getElementById('ddList').innerHTML=clientes.map(function(c,i){
+  return '<div class="res" data-i="'+i+'"><span class="av">'+c.ini+'</span><span><b>'+c.n+'</b><small>SAP '+c.sap+'</small></span>'+
+    (c.al.length?'<span class="tail"><span class="pill d">'+c.al.length+'</span></span>':'')+'</div>';
+}).join('');
+document.getElementById('swBtn').addEventListener('click',function(e){
+  e.stopPropagation();
+  var dd=document.getElementById('dd'); dd.hidden=!dd.hidden;
+});
+</script>
+</body>
+</html>
